@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Threading;
+using Controller;
+using Model;
 
 namespace Racebaan
 {
@@ -6,7 +9,15 @@ namespace Racebaan
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Data.Initialize();
+            Data.NextRace();
+            
+            Console.WriteLine(Data.CurrentRace);
+
+            for (; ; )
+            {
+                Thread.Sleep(100);
+            }
         }
     }
 }
