@@ -10,6 +10,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Racebaan", "Racebaan.csproj
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Controller", "..\Controller\Controller.csproj", "{E06B828D-18DC-44C4-B2F6-5A29DD303FB8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{BB158DCB-01DF-4C5C-8751-0F1E9EB58D12} = {BB158DCB-01DF-4C5C-8751-0F1E9EB58D12}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Model", "..\Model\Model.csproj", "{BB158DCB-01DF-4C5C-8751-0F1E9EB58D12}"
 EndProject
