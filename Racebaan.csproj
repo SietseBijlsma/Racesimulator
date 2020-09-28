@@ -6,7 +6,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ControllerTest\**" />
+    <Compile Remove="Controller\**" />
+    <Compile Remove="Model\**" />
+    <EmbeddedResource Remove="ControllerTest\**" />
+    <EmbeddedResource Remove="Controller\**" />
+    <EmbeddedResource Remove="Model\**" />
+    <None Remove="ControllerTest\**" />
+    <None Remove="Controller\**" />
+    <None Remove="Model\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Controller\Controller.csproj" />
+    <ProjectReference Include="Controller\Controller.csproj" />
+    <ProjectReference Include="Model\Model.csproj" />
   </ItemGroup>
 
 </Project>

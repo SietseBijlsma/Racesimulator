@@ -12,7 +12,8 @@ namespace Racebaan
             Data.Initialize();
             Data.NextRace();
             
-            Console.WriteLine(Data.CurrentRace);
+            Visualisatie.InitializeTrack(Data.CurrentRace.Track);
+            Visualisatie.DrawTrack(Data.CurrentRace.Track);
 
             for (; ; )
             {
