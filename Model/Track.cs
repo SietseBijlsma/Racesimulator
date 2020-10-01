@@ -28,7 +28,5 @@ namespace Model
             Name = name;
             Sections = ArrayToLinkedList(sections);
         }
-
-        
     }
 }

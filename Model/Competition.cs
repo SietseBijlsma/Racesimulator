@@ -15,10 +15,8 @@ namespace Model
             {
                 return Tracks.Dequeue();
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
     }
 }

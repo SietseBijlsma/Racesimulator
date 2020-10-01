@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -15,18 +16,26 @@ namespace Controller
         }
 
         #region graphics
-        private static string[] _finishHorizontal = {"----", "  # ", "  # ", "----" };
-        private static string[] _finishVertical = {"|  |", "|  |", "|##|", "|  |"};
-        private static string[] _startHorizontal = {"----", " >  ", "  > ", "----"};
-        private static string[] _startVerticalDown = {"|  |", "|v |", "|  v|", "|  |"};
+        private static string[] _finishHorizontal = {"----", "2 # ", " 1# ", "----" };
+        private static string[] _finishVertical = {"| 2|", "|1 |", "|##|", "|  |"};
+        private static string[] _startHorizontal = {"----", "2>  ", " 1> ", "----"};
+        private static string[] _startVerticalDown = {"|2 |", "|v1|", "|  v|", "|  |"};
         private static string[] _startVerticalUp = { "|  |", "|^ |", "| ^|", "|  |"};
-        private static string[] _straightHorizontal = {"----", "    ", "    ", "----"};
-        private static string[] _straightVertical = {"|  |", "|  |", "|  |", "|  |"};
-        private static string[] _cornerRightDown = {@"--\ ", @"   \", "   |", @"\  |"};
-        private static string[] _cornerDownLeft = {@"/  |", "   |", @"   /", @"--/"};
-        private static string[] _cornerLeftUp = {@"|  \", "|   ", @" \  ", @" \--" };
-        private static string[] _cornerUpRight = {@" /--", @"/   ", "|   ", @"|  /"};
+        private static string[] _straightHorizontal = {"----", " 1 ", "  2 ", "----"};
+        private static string[] _straightVertical = {"|  |", "|21|", "|  |", "|  |"};
+        private static string[] _cornerRightDown = {@"--\ ", @" 1 \", " 2 |", @"\  |"};
+        private static string[] _cornerDownLeft = {@"/  |", " 1 |", @" 2 /", @"--/"};
+        private static string[] _cornerLeftUp = {@"|  \", "| 1 ", @"\ 2 ", @" \--" };
+        private static string[] _cornerUpRight = {@" /--", @"/ 1 ", "| 2 ", @"|  /"};
         #endregion
+
+        public static string DrawParticipants(string replacedSection, IParticipant participant1, IParticipant participant2)
+        {
+            replacedSection = replacedSection.Replace("1", (participant1 == null ? " " : participant1.Name));
+            replacedSection = replacedSection.Replace("2", (participant2 == null ? " " : participant2.Name));
+
+            return replacedSection;
+        }
 
         public static void DrawTrack(Track track)
         {
@@ -73,7 +82,7 @@ namespace Controller
                     if (direction == 1) direction = 4;
                     else direction--;
                 }
-                else if (section.SectionType == SectionTypes.Rightcorner)
+                else if (section.SectionType == SectionTypes.RightCorner)
                 {
                     if (direction == 4) direction = 1;
                     else direction++;
@@ -129,10 +138,9 @@ namespace Controller
                 {
                     trackArray = _straightHorizontal;
                 }
-
             }
 
-            if (section.SectionType == SectionTypes.Rightcorner)
+            if (section.SectionType == SectionTypes.RightCorner)
             {
                 switch (section.Direction)
                 {
@@ -170,11 +178,12 @@ namespace Controller
                 }
             }
 
-            
+            SectionData data = Data.CurrentRace.GetSectionData(section);
+
             for (int i = 0; i < trackArray.Length; i++)
             {
                 Console.SetCursorPosition(section.X * 4, (section.Y * 4) + i);
-                Console.WriteLine(trackArray[i]);
+                Console.Write(DrawParticipants(trackArray[i], data.Left, data.Right));
             }
         }
     }
