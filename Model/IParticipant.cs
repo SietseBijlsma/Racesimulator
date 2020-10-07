@@ -10,7 +10,7 @@ namespace Model
          int Points { get; set; }
          IEquipement Equipement { get; set; }
          TeamColors TeamColor { get; set; }
-
+         int LapCount { get; set; }
     }
 
     public enum TeamColors

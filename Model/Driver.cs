@@ -10,5 +10,11 @@ namespace Model
         public int Points { get; set; }
         public IEquipement Equipement { get; set; }
         public TeamColors TeamColor { get; set; }
+        public int LapCount { get; set; }
+
+        public Driver()
+        {
+            Equipement = new Car();
+        }
     }
 }

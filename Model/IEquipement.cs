@@ -6,7 +6,6 @@ namespace Model
 {
     public interface IEquipement
     {
-
         int Quality { get; set; }
         int Performance { get; set; }
         int Speed { get; set; }

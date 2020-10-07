@@ -19,10 +19,10 @@ namespace Controller
 
         public static void AddParticipants()
         {
-            Competition.Participants.Add(new Driver() {Name = "e"});
-            Competition.Participants.Add(new Driver() {Name = "f"});
-            Competition.Participants.Add(new Driver() {Name = "c" });
-            Competition.Participants.Add(new Driver() {Name = "d" });
+            //Competition.Participants.Add(new Driver() {Name = "e"});
+            //Competition.Participants.Add(new Driver() {Name = "f"});
+            //Competition.Participants.Add(new Driver() {Name = "c" });
+            //Competition.Participants.Add(new Driver() {Name = "d" });
             Competition.Participants.Add(new Driver() {Name = "a" });
             Competition.Participants.Add(new Driver() {Name = "b" });
         }
