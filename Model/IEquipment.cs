@@ -4,9 +4,8 @@ using System.Text;
 
 namespace Model
 {
-    public interface IEquipement
+    public interface IEquipment
     {
-
         int Quality { get; set; }
         int Performance { get; set; }
         int Speed { get; set; }

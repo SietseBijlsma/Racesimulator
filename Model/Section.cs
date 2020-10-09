@@ -17,7 +17,7 @@ namespace Model
     {
         Straight,
         LeftCorner,
-        Rightcorner,
+        RightCorner,
         StartGrid,
         Finish
     }
