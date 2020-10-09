@@ -4,16 +4,18 @@ using System.Net;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using Controller;
 using Model;
 
-namespace Controller
+namespace Racebaan
 {
-    public static class Visualisatie
+    public static class Visualization
     {
         public static void InitializeTrack(Track track)
         {
-            CalcCoords(track);
-            Data.CurrentRace.OnDriversChanged += OnDriversChanged;
+            CalcDirection(track);
+            Data.CurrentRace.DriversChanged += OnDriversChanged;
+            Data.CurrentRace.RaceEnded += RaceEnded;
             Console.CursorVisible = false;
         }
 
@@ -31,14 +33,40 @@ namespace Controller
         private static string[] _cornerUpRight = {@" /--", @"/ 1 ", "| 2 ", @"|  /"};
         #endregion
 
+        //replaces the strings where there is a participant
         public static string DrawParticipants(string replacedSection, IParticipant participant1, IParticipant participant2)
         {
             replacedSection = replacedSection.Replace("1", (participant1 == null ? " " : participant1.Name));
             replacedSection = replacedSection.Replace("2", (participant2 == null ? " " : participant2.Name));
 
+            if (participant1 != null)
+            {
+                if (participant1.Equipment.IsBroken)
+                {
+                    replacedSection = replacedSection.Replace(participant1.Name, "x");
+                }
+            }
+
+            if (participant2 != null)
+            {
+                if (participant2.Equipment.IsBroken)
+                {
+                    replacedSection = replacedSection.Replace(participant2.Name, "x");
+                }
+            }
+            
             return replacedSection;
         }
 
+        //public static string DrawBrokenParticipants(string replacedSection, IParticipant participant1, IParticipant participant2)
+        //{
+        //    replacedSection = replacedSection.Replace("1", (par ? " " : participant1.Name));
+        //    replacedSection = replacedSection.Replace("2", (participant2 == null ? " " : participant2.Name));
+
+        //    return replacedSection;
+        //}
+
+        //draws the track
         public static void DrawTrack(Track track)
         {
             foreach (Section section in track.Sections)
@@ -48,7 +76,8 @@ namespace Controller
             DrawRaceInfo();
         }
 
-        public static void CalcCoords(Track track)
+        //calculates the direction of all the corners and places the track on the console if one goes below zero
+        public static void CalcDirection(Track track)
         {
             //direction 1 is north
             //direction 2 is east
@@ -105,6 +134,7 @@ namespace Controller
             }
         }
 
+        //draws the track based off the coords given from CalcCoords
         public static void DrawTrackArray(Section section)
         {
             string[] trackArray = {};
@@ -190,36 +220,48 @@ namespace Controller
             }
         }
 
+        //events that gets called with DriversChangedEventArgs
         public static void OnDriversChanged(object sender, DriversChangedEventArgs e)
         {
             DrawTrack(e.Track);
         }
 
+        //event that gets called with RaceEnded
+        public static void RaceEnded(object sender, RaceEndedEventArgs e)
+        {
+            Console.Clear();
+            Data.NextRace();
+            Console.WriteLine(Data.CurrentRace.Track.Name);
+            InitializeTrack(Data.CurrentRace.Track);
+            DrawTrack(Data.CurrentRace.Track);
+        }
+
+        //shows some additional info on the console
         public static void DrawRaceInfo()
         {
             int y = 0;
             int x = 100;
             Console.SetCursorPosition(x, y);
-            Console.WriteLine("------------------");
+            Console.Write("------------------");
             foreach (IParticipant participant in Data.CurrentRace.Participants)
             {
-                int quality = participant.Equipement.Quality;
-                int performance = participant.Equipement.Performance;
+                int quality = participant.Equipment.Quality;
+                int performance = participant.Equipment.Performance;
                 int speed = performance * quality;
 
                 y++;
                 Console.SetCursorPosition(x, y);
-                Console.WriteLine($"| Participant: {participant.Name}");
+                Console.Write($"| Participant: {participant.Name}");
                 y++;
                 Console.SetCursorPosition(x, y);
-                Console.WriteLine($"|     Speed: {speed}");
+                Console.Write($"|     Speed: {speed}");
                 y++;
                 Console.SetCursorPosition(x, y);
-                Console.WriteLine($"|     LapCount: {participant.LapCount}");
+                Console.Write($"|     LapCount: {participant.LapCount}");
             }
             y++;
             Console.SetCursorPosition(x, y);
-            Console.WriteLine("------------------");
+            Console.Write("------------------");
         }
     }
 }

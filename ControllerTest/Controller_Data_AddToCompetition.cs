@@ -18,21 +18,22 @@ namespace ControllerTest
         }
 
         [Test]
-        public void TestAddTracks()
+        public void Test_if_Any_Tracks()
         {
             var result = Data.Competition.Tracks.Count;
             Assert.IsNotNull(result);
         }
 
         [Test]
-        public void TestAddParticipants()
+        public void Test_If_Any_Participants()
         {
             var result = Data.Competition.Tracks.Count;
             Assert.IsNotNull(result);
+            Assert.GreaterOrEqual(result, 2);
         }
 
         [Test]
-        public void TestNextRace()
+        public void Test_NextRace()
         {
             var result = Data.CurrentRace;
             Data.NextRace();

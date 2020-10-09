@@ -15,13 +15,15 @@ namespace Controller
         public List<IParticipant> Participants { get; set; }
         public DateTime StartTime { get; set; }
 
-        public event EventHandler<DriversChangedEventArgs> OnDriversChanged; 
+        public event EventHandler<DriversChangedEventArgs> DriversChanged;
+        public event EventHandler<RaceEndedEventArgs> RaceEnded;
 
         private Timer _timer;
         private Random _random;
         private Dictionary<Section, SectionData> _positions;
         private readonly int _sectionLength = 250;
 
+        //gets the section data from the section you give as input
         public SectionData GetSectionData(Section section)
         {
             if(!_positions.ContainsKey(section))
@@ -32,19 +34,23 @@ namespace Controller
             return _positions.GetValueOrDefault(section);
         }
 
-        public void RandomizeEquipement()
+        //randomizes the quality and performance of the car
+        public void RandomizeEquipment()
         {
             foreach(IParticipant participant in Participants)
             {
-                participant.Equipement.Quality = _random.Next(3, 10) + 5;
-                participant.Equipement.Performance = _random.Next(3, 10) + 5;
+                participant.Equipment.Quality = _random.Next(3, 10) + 5;
+                participant.Equipment.Performance = _random.Next(3, 10) + 5;
             }
         }
 
+        //places all the participants on the right tracks
         public void PlaceParticipants()
         {
             for (int i = 0; i < Participants.Count; i++)
             {
+                if (GetStartGrid().Count <= (i / 2))
+                    return;
                 Section s = GetStartGrid().ElementAt(i / 2);
 
                 SectionData data = GetSectionData(s);
@@ -61,33 +67,52 @@ namespace Controller
             }
         }
 
+        //gets the start grids of the track
         public List<Section> GetStartGrid()
         {
-            List<Section> list = new List<Section>();
-            foreach (Section section in Track.Sections)
-            {
-                if(section.SectionType == SectionTypes.StartGrid)
-                    list.Add(section);
-            }
-            return list;
+            return Track.Sections.Where(x => x.SectionType == SectionTypes.StartGrid).ToList();
         }
 
+        //starts the timer
         private void Start()
         {
             _timer.Enabled = true;
         }
 
+        //get the index of the section you give as input
         public int GetIndexOfSection(Section section)
         {
             return Track.Sections.TakeWhile(x => x != section).Count();
         }
 
+        //determines if and when a car breaks down
+        public void IsCarBroken(IParticipant participant)
+        {
+            int randomNumber =_random.Next(1, 100);
+            if (randomNumber <= 20)
+                participant.Equipment.IsBroken = false;
+            if (randomNumber <= 2)
+                participant.Equipment.IsBroken = true;
+        }
+
+        //OnTimedEvent is being called every 0.5 seconds
         private void OnTimedEvent(object sender, EventArgs e)
         {
+            //clears the event handler and starts the event to begin the nextRace when all the participants finished all the laps
+            bool finished = Participants.FindAll(x => x.LapCount == 2).Count == Participants.Count;
+            if (finished)
+            {
+                ClearDriversChanged();
+                foreach (IParticipant participant in Participants)
+                    participant.LapCount = 0;
+                RaceEnded?.Invoke(this, new RaceEndedEventArgs());
+            }
+
+            //moves the participants across the track
             foreach (IParticipant participant in Participants)
             {
-                int quality = participant.Equipement.Quality;
-                int performance = participant.Equipement.Performance;
+                int quality = participant.Equipment.Quality;
+                int performance = participant.Equipment.Performance;
                 int speed = (performance * quality);
 
                 Section s = _positions.FirstOrDefault(x => (x.Value.Left == participant) || (x.Value.Right == participant)).Key;
@@ -107,18 +132,10 @@ namespace Controller
             
                 SectionData data2 = GetSectionData(x);
                 bool canMove = false;
-                bool finished = !Participants.Select(x => x.LapCount < 2).Any();
 
-                if (finished)
-                {
-                    ClearDriversChanged();
-                    Console.Clear();
-                    Data.NextRace();
-                    Visualisatie.InitializeTrack(Data.CurrentRace.Track);
-                    Visualisatie.DrawTrack(Data.CurrentRace.Track);
-                }
+                IsCarBroken(participant);
 
-                if (participant.LapCount < 2)
+                if (participant.LapCount < 2 && participant.Equipment.IsBroken == false)
                 {
                     if (data.Left == participant)
                     {
@@ -173,7 +190,7 @@ namespace Controller
                         }
                     }
                 }
-                else
+                else if(participant.LapCount == 2)
                 {
                     if (participant == data.Right)
                         data.Right = null;
@@ -181,12 +198,13 @@ namespace Controller
                         data.Left = null;
                 }
             }
-            OnDriversChanged?.Invoke(this, new DriversChangedEventArgs() { Track = Track });
+            DriversChanged?.Invoke(this, new DriversChangedEventArgs() { Track = Track });
         }
 
+        //clears the event handler
         public void ClearDriversChanged()
         {
-            
+            DriversChanged = null;
         }
 
         public Race(Track track, List<IParticipant> participants)
@@ -197,7 +215,7 @@ namespace Controller
             StartTime = new DateTime();
             _positions = new Dictionary<Section, SectionData>();
             PlaceParticipants();
-            RandomizeEquipement();
+            RandomizeEquipment();
             _timer = new Timer(500);
             _timer.Elapsed += OnTimedEvent;
             OnTimedEvent(this, null);

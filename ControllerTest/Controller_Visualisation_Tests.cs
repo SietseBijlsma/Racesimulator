@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Racebaan;
 using Controller;
 using NUnit.Framework;
 
@@ -12,14 +13,13 @@ namespace ControllerTest
         [SetUp]
         public void Setup()
         {
-            Visualisatie.InitializeTrack(Data.CurrentRace.Track);
-            Visualisatie.DrawTrack(Data.CurrentRace.Track);
+            Visualization.InitializeTrack(Data.CurrentRace.Track);
         }
 
         [Test]
-        public void TestTrack()
+        public void Test_If_Track_Can_Be_Drawn()
         {
-
+            Visualization.DrawTrack(Data.CurrentRace.Track);
         }
     }
 }
