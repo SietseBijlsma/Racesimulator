@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
@@ -42,29 +43,16 @@ namespace Racebaan
             if (participant1 != null)
             {
                 if (participant1.Equipment.IsBroken)
-                {
                     replacedSection = replacedSection.Replace(participant1.Name, "x");
-                }
             }
-
             if (participant2 != null)
             {
                 if (participant2.Equipment.IsBroken)
-                {
                     replacedSection = replacedSection.Replace(participant2.Name, "x");
-                }
             }
             
             return replacedSection;
         }
-
-        //public static string DrawBrokenParticipants(string replacedSection, IParticipant participant1, IParticipant participant2)
-        //{
-        //    replacedSection = replacedSection.Replace("1", (par ? " " : participant1.Name));
-        //    replacedSection = replacedSection.Replace("2", (participant2 == null ? " " : participant2.Name));
-
-        //    return replacedSection;
-        //}
 
         //draws the track
         public static void DrawTrack(Track track)
@@ -240,7 +228,7 @@ namespace Racebaan
         public static void DrawRaceInfo()
         {
             int y = 0;
-            int x = 100;
+            int x = 90;
             Console.SetCursorPosition(x, y);
             Console.Write("------------------");
             foreach (IParticipant participant in Data.CurrentRace.Participants)
@@ -257,7 +245,13 @@ namespace Racebaan
                 Console.Write($"|     Speed: {speed}");
                 y++;
                 Console.SetCursorPosition(x, y);
-                Console.Write($"|     LapCount: {participant.LapCount}");
+                Console.Write($"|     CrashesPerRace: {participant.AmountCrashedPerRace}");
+                y++;
+                Console.SetCursorPosition(x, y);
+                Console.Write($"|     CrashesPerCompetition: {participant.AmountCrashedPerCompetition}");
+                y++;
+                Console.SetCursorPosition(x, y);
+                Console.Write($"|     RaceTime: {participant.RaceTime / 2}");
             }
             y++;
             Console.SetCursorPosition(x, y);
