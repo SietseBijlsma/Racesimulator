@@ -25,5 +25,4 @@ namespace Model
         Grey,
         Blue
     }
-
 }

@@ -12,6 +12,20 @@ namespace Model
 
         public void Add(List<SaveTime> list)
         {
+            SaveTime match = list.Find(x => x.Name == Name);
+            if (match != null)
+                match.Time += Time;
+            else
+                this.Time = Time;
+
+            if (match != null)
+                match.TimePerSection += TimePerSection;
+            else
+                this.TimePerSection = TimePerSection;
+        }
+
+        public void GetBest(List<SaveTime> list)
+        {
 
         }
 

@@ -96,9 +96,7 @@ namespace Controller
             {
                 participant.Equipment.IsBroken = true;
                 participant.AmountCrashedPerRace++;
-            }
-               
-                
+            }    
         }
 
         public List<IParticipant> DeterminePosition(List<IParticipant> participant)
@@ -116,7 +114,7 @@ namespace Controller
             {
                 Data.Competition.SetPoints(DeterminePosition(Participants));
                 Data.Competition.SetTime(Participants, Track);
-                Data.Competition.SetCrashes(Participants);
+                Data.Competition.SetCrashes(Participants, Track);
                 ClearDriversChanged();
                 foreach (IParticipant participant in Participants)
                 {

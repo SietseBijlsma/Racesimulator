@@ -10,5 +10,6 @@ namespace Model
         string Name { get; set; }
 
         public void Add(List<T> list);
+        public void GetBest(List<T> list);
     }
 }

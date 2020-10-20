@@ -9,26 +9,25 @@ namespace Model
         public string Name { get; set; }
         public int CrashesPerRace { get; set; }
         public int CrashesPerCompetition { get; set; }
+        public Track Track { get; set; }
 
         public void Add(List<SaveCrashes> list)
         {
-            if (CrashesPerRace == 0)
+            SaveCrashes match = list.Find(x => x.Name == Name);
+            SaveCrashes match2 = list.Find(x => x.Track == Track && x.Track == Track);
+            if (match != null)
+                match.CrashesPerRace += CrashesPerRace;
+            else if (match2 != null)
+                this.CrashesPerRace = CrashesPerRace;
+            if(match != null)
             {
-                CrashesPerRace = 
+                match.CrashesPerCompetition += CrashesPerCompetition;
             }
-            else
-            {
+        }
 
-            }
+        public void GetBest(List<SaveCrashes> list)
+        {
 
-            if (CrashesPerCompetition == 0)
-            {
-
-            }
-            else
-            {
-
-            }
         }
 
         public SaveCrashes()

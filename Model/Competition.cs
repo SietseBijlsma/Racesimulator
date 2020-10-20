@@ -40,11 +40,11 @@ namespace Model
             }
         }
 
-        public void SetCrashes(List<IParticipant> list) 
+        public void SetCrashes(List<IParticipant> list, Track track) 
         {
             foreach (IParticipant participant in list)
             {
-                Crashes.AddToList(new SaveCrashes() {Name = participant.Name, CrashesPerRace = participant.AmountCrashedPerRace, CrashesPerCompetition = participant.AmountCrashedPerCompetition});
+                Crashes.AddToList(new SaveCrashes() {Name = participant.Name, CrashesPerRace = participant.AmountCrashedPerRace, CrashesPerCompetition = participant.AmountCrashedPerCompetition, Track = track});
             }
         }
 
