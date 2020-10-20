@@ -42,10 +42,5 @@ namespace Controller
                 CurrentRace = new Race(track, Competition.Participants);
             }
         }
-
-        public static void OnRaceEnded()
-        {
-
-        }
     }
 }

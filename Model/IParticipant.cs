@@ -11,6 +11,10 @@ namespace Model
          IEquipment Equipment { get; set; }
          TeamColors TeamColor { get; set; }
          int LapCount { get; set; }
+         int RaceTime { get; set; }
+         bool FinishedCurrentRace { get; set; }
+         int AmountCrashedPerRace { get; set; }
+         int AmountCrashedPerCompetition { get; set; }
     }
 
     public enum TeamColors

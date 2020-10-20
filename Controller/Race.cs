@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Runtime.ConstrainedExecution;
 using System.Threading.Tasks;
@@ -92,7 +93,18 @@ namespace Controller
             if (randomNumber <= 20)
                 participant.Equipment.IsBroken = false;
             if (randomNumber <= 2)
+            {
                 participant.Equipment.IsBroken = true;
+                participant.AmountCrashedPerRace++;
+            }
+               
+                
+        }
+
+        public List<IParticipant> DeterminePosition(List<IParticipant> participant)
+        {
+            List<IParticipant> ParticipantPosition;
+            return ParticipantPosition = Participants.OrderByDescending(x => x.RaceTime).ToList();
         }
 
         //OnTimedEvent is being called every 0.5 seconds
@@ -102,9 +114,18 @@ namespace Controller
             bool finished = Participants.FindAll(x => x.LapCount == 2).Count == Participants.Count;
             if (finished)
             {
+                Data.Competition.SetPoints(DeterminePosition(Participants));
+                Data.Competition.SetTime(Participants, Track);
+                Data.Competition.SetCrashes(Participants);
                 ClearDriversChanged();
                 foreach (IParticipant participant in Participants)
+                {
                     participant.LapCount = 0;
+                    participant.FinishedCurrentRace = false;
+                    participant.RaceTime = 0;
+                    participant.AmountCrashedPerCompetition += participant.AmountCrashedPerRace;
+                    participant.AmountCrashedPerRace = 0;
+                }
                 RaceEnded?.Invoke(this, new RaceEndedEventArgs());
             }
 
@@ -114,6 +135,9 @@ namespace Controller
                 int quality = participant.Equipment.Quality;
                 int performance = participant.Equipment.Performance;
                 int speed = (performance * quality);
+
+                if (participant.LapCount == 2) participant.FinishedCurrentRace = true;
+                if (participant.FinishedCurrentRace == false) participant.RaceTime++;
 
                 Section s = _positions.FirstOrDefault(x => (x.Value.Left == participant) || (x.Value.Right == participant)).Key;
 
@@ -140,7 +164,7 @@ namespace Controller
                     if (data.Left == participant)
                     {
                         data.DistanceLeft += speed;
-                        if (data.DistanceLeft > _sectionLength)
+                        if (data.DistanceLeft >= _sectionLength)
                         {
                             if (data2.Left == null)
                             {
@@ -152,7 +176,7 @@ namespace Controller
                                 data2.Right = participant;
                                 canMove = true;
                             }
-                            if (canMove)
+                            if (canMove && participant.Equipment.IsBroken == false)
                             {
                                 data.Left = null;
                                 data.DistanceLeft = 0;
