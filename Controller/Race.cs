@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Runtime.ConstrainedExecution;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using System.Timers;
 
@@ -42,6 +43,7 @@ namespace Controller
             {
                 participant.Equipment.Quality = _random.Next(3, 10) + 5;
                 participant.Equipment.Performance = _random.Next(3, 10) + 5;
+                participant.Equipment.Speed = participant.Equipment.Quality * participant.Equipment.Performance;
             }
         }
 
@@ -77,7 +79,65 @@ namespace Controller
         //starts the timer
         private void Start()
         {
-            _timer.Enabled = true;
+            _timer.Start();
+        }
+
+        //calculates the direction of all the corners and places the track on the console if one goes below zero
+        public static void CalcDirection(Track track)
+        {
+            //direction 1 is north
+            //direction 2 is east
+            //direction 3 is south
+            //direction 4 is west
+
+            int direction = 2;
+            int x = 1;
+            int y = 1;
+            int lowestX = 0;
+            int lowestY = 0;
+
+            foreach (Section section in track.Sections)
+            {
+                section.Direction = direction;
+                switch (direction)
+                {
+                    case 1:
+                        y--;
+                        break;
+                    case 2:
+                        x++;
+                        break;
+                    case 3:
+                        y++;
+                        break;
+                    case 4:
+                        x--;
+                        break;
+                }
+
+                if (section.SectionType == SectionTypes.LeftCorner)
+                {
+                    if (direction == 1) direction = 4;
+                    else direction--;
+                }
+                else if (section.SectionType == SectionTypes.RightCorner)
+                {
+                    if (direction == 4) direction = 1;
+                    else direction++;
+                }
+
+                section.X = x;
+                section.Y = y;
+                if (x < lowestX) lowestX = x;
+                if (y < lowestY) lowestY = y;
+            }
+            lowestX = lowestX * -1;
+            lowestY = lowestY * -1;
+            foreach (Section section in track.Sections)
+            {
+                section.X += lowestX;
+                section.Y += lowestY;
+            }
         }
 
         //get the index of the section you give as input
@@ -95,14 +155,31 @@ namespace Controller
             if (randomNumber <= 2)
             {
                 participant.Equipment.IsBroken = true;
-                participant.AmountCrashedPerRace++;
+                participant.Equipment.Speed--;
+
+                Data.Competition.Crashes.AddToList(new SaveCrashesPerRace() { Name = participant.Name, CrashesPerRace = 1, Track = Data.CurrentRace.Track });
+                Data.Competition.CrashesTotal.AddToList(new SaveCrashesPerCompetition() { Name = participant.Name, CrashesPerCompetition = 1});
             }    
         }
 
-        public List<IParticipant> DeterminePosition(List<IParticipant> participant)
+        public List<IParticipant> DeterminePosition()
         {
-            List<IParticipant> ParticipantPosition;
-            return ParticipantPosition = Participants.OrderByDescending(x => x.RaceTime).ToList();
+            return Participants.OrderByDescending(x => x.RaceTime).ToList();
+        }
+
+        //This gets called at the end of a race
+        public void EndOfRace()
+        {
+            Data.Competition.SetPoints(DeterminePosition());
+            ClearDriversChanged();
+            foreach (IParticipant participant in Participants)
+            {
+                participant.LapCount = 0;
+                participant.FinishedCurrentRace = false;
+                participant.RaceTime = 0;
+                ((Driver)participant).StartTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+            }
+            RaceEnded?.Invoke(this, new RaceEndedEventArgs());
         }
 
         //OnTimedEvent is being called every 0.5 seconds
@@ -112,46 +189,37 @@ namespace Controller
             bool finished = Participants.FindAll(x => x.LapCount == 2).Count == Participants.Count;
             if (finished)
             {
-                Data.Competition.SetPoints(DeterminePosition(Participants));
-                Data.Competition.SetTime(Participants, Track);
-                Data.Competition.SetCrashes(Participants, Track);
-                ClearDriversChanged();
-                foreach (IParticipant participant in Participants)
-                {
-                    participant.LapCount = 0;
-                    participant.FinishedCurrentRace = false;
-                    participant.RaceTime = 0;
-                    participant.AmountCrashedPerCompetition += participant.AmountCrashedPerRace;
-                    participant.AmountCrashedPerRace = 0;
-                }
-                RaceEnded?.Invoke(this, new RaceEndedEventArgs());
+                EndOfRace();
             }
 
-            //moves the participants across the track
+            MovePlayer();
+            
+            DriversChanged?.Invoke(this, new DriversChangedEventArgs() { Track = Track });
+        }
+        //moves the participants across the track
+        public void MovePlayer()
+        {
             foreach (IParticipant participant in Participants)
             {
-                int quality = participant.Equipment.Quality;
-                int performance = participant.Equipment.Performance;
-                int speed = (performance * quality);
+                if (participant.FinishedCurrentRace == false)
+                {
+                    Data.Competition.Time.AddToList(new SaveTime() { Name = participant.Name, Time = TimeSpan.FromMilliseconds(DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond - 
+                        ((Driver)participant).StartTime), Track = Data.CurrentRace.Track });
+                }
 
                 if (participant.LapCount == 2) participant.FinishedCurrentRace = true;
                 if (participant.FinishedCurrentRace == false) participant.RaceTime++;
 
                 Section s = _positions.FirstOrDefault(x => (x.Value.Left == participant) || (x.Value.Right == participant)).Key;
-
                 if (s == null)
                     continue;
 
                 int index = GetIndexOfSection(s) + 1;
-
                 if (index == Track.Sections.Count)
-                {
                     index = 0;
-                }
-                SectionData data = GetSectionData(s);
 
+                SectionData data = GetSectionData(s);
                 Section x = Track.Sections.ElementAt(index);
-            
                 SectionData data2 = GetSectionData(x);
                 bool canMove = false;
 
@@ -161,7 +229,7 @@ namespace Controller
                 {
                     if (data.Left == participant)
                     {
-                        data.DistanceLeft += speed;
+                        data.DistanceLeft += participant.Equipment.Speed;
                         if (data.DistanceLeft >= _sectionLength)
                         {
                             if (data2.Left == null)
@@ -182,12 +250,15 @@ namespace Controller
                                 {
                                     participant.LapCount++;
                                 }
+                                Data.Competition.TimePerSection.AddToList(new SaveTimePerSection() { Name = participant.Name, TimePerSection = TimeSpan.FromMilliseconds(DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond - 
+                                    ((Driver)participant).SectionEnterTime), Track = Data.CurrentRace.Track });
+                                ((Driver) participant).SectionEnterTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
                             }
                         }
                     }
                     else if (data.Right == participant)
                     {
-                        data.DistanceRight += speed;
+                        data.DistanceRight += participant.Equipment.Speed;
                         if (data.DistanceRight > _sectionLength)
                         {
                             if (data2.Left == null)
@@ -208,11 +279,14 @@ namespace Controller
                                 {
                                     participant.LapCount++;
                                 }
+                                Data.Competition.TimePerSection.AddToList(new SaveTimePerSection() { Name = participant.Name, TimePerSection = TimeSpan.FromMilliseconds(DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond - 
+                                    ((Driver)participant).SectionEnterTime) / 2, Track = Data.CurrentRace.Track });
+                                ((Driver)participant).SectionEnterTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
                             }
                         }
                     }
                 }
-                else if(participant.LapCount == 2)
+                else if (participant.LapCount == 2)
                 {
                     if (participant == data.Right)
                         data.Right = null;
@@ -220,7 +294,6 @@ namespace Controller
                         data.Left = null;
                 }
             }
-            DriversChanged?.Invoke(this, new DriversChangedEventArgs() { Track = Track });
         }
 
         //clears the event handler
@@ -240,7 +313,6 @@ namespace Controller
             RandomizeEquipment();
             _timer = new Timer(500);
             _timer.Elapsed += OnTimedEvent;
-            OnTimedEvent(this, null);
             Start();
         }
     }

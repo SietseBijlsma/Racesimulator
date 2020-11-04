@@ -11,7 +11,9 @@ namespace Model
         public SavePoints Point { get; set; }
         public SaveRaceInfo<SavePoints> Points { get; set; } = new SaveRaceInfo<SavePoints>();
         public SaveRaceInfo<SaveTime> Time { get; set; } = new SaveRaceInfo<SaveTime>();
-        public SaveRaceInfo<SaveCrashes> Crashes { get; set; } = new SaveRaceInfo<SaveCrashes>();
+        public SaveRaceInfo<SaveCrashesPerRace> Crashes { get; set; } = new SaveRaceInfo<SaveCrashesPerRace>();
+        public SaveRaceInfo<SaveCrashesPerCompetition> CrashesTotal { get; set; } = new SaveRaceInfo<SaveCrashesPerCompetition>();
+        public SaveRaceInfo<SaveTimePerSection> TimePerSection { get; set; } = new SaveRaceInfo<SaveTimePerSection>();
 
         public void SetPoints(List<IParticipant> list)
         {
@@ -23,28 +25,6 @@ namespace Model
                 Points.AddToList(new SavePoints() {Name = participant.Name, Points = points});
                 if(points >= 0)
                     points--;
-            }
-        }
-
-        public void SetTime(List<IParticipant> list, Track track)
-        {
-            int sectionCount = track.Sections.Count;
-
-            foreach (IParticipant participant in list)
-            {
-                Time.AddToList(new SaveTime()
-                {
-                    Name = participant.Name, Time = TimeSpan.FromSeconds(participant.RaceTime / 2),
-                    TimePerSection = TimeSpan.FromSeconds(participant.RaceTime / 2 / sectionCount)
-                });
-            }
-        }
-
-        public void SetCrashes(List<IParticipant> list, Track track) 
-        {
-            foreach (IParticipant participant in list)
-            {
-                Crashes.AddToList(new SaveCrashes() {Name = participant.Name, CrashesPerRace = participant.AmountCrashedPerRace, CrashesPerCompetition = participant.AmountCrashedPerCompetition, Track = track});
             }
         }
 

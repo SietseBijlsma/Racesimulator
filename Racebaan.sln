@@ -11,6 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ControllerTest", "Controlle
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Model", "Model\Model.csproj", "{FAD3CCC0-54EF-452F-AB3D-DE8B374E8E5E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WPF window", "..\WPF window\WPF window.csproj", "{7C6DBCBC-FFC3-4948-ADF5-7B88E85188E5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AC0D1552-76E9-469D-A989-124311077FAC} = {AC0D1552-76E9-469D-A989-124311077FAC}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +38,10 @@ Global
 		{FAD3CCC0-54EF-452F-AB3D-DE8B374E8E5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FAD3CCC0-54EF-452F-AB3D-DE8B374E8E5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FAD3CCC0-54EF-452F-AB3D-DE8B374E8E5E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C6DBCBC-FFC3-4948-ADF5-7B88E85188E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C6DBCBC-FFC3-4948-ADF5-7B88E85188E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C6DBCBC-FFC3-4948-ADF5-7B88E85188E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C6DBCBC-FFC3-4948-ADF5-7B88E85188E5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Model
@@ -15,12 +16,14 @@ namespace Model
             if(match != null)
                 match.Points += Points; 
             else
-                this.Points = Points;
+                list.Add(this);
         }
 
-        public void GetBest(List<SavePoints> list)
+        public string GetBest(List<SavePoints> list)
         {
-
+            if (list.Count > 0)
+                return list.Find(y => y.Points == list.Max(x => x.Points)).Name;
+            return "";
         }
 
         public SavePoints()

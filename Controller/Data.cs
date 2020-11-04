@@ -13,25 +13,25 @@ namespace Controller
         public static void Initialize()
         {
             Competition = new Competition();
-            AddParticipants();
-            AddTracks();
+            AddParticipants(Competition);
+            AddTracks(Competition);
         }
 
-        public static void AddParticipants()
+        public static void AddParticipants(Competition competition)
         {
-            Competition.Participants.Add(new Driver() {Name = "e"});
-            Competition.Participants.Add(new Driver() {Name = "f"});
-            Competition.Participants.Add(new Driver() {Name = "c" });
-            Competition.Participants.Add(new Driver() {Name = "d" });
-            Competition.Participants.Add(new Driver() {Name = "a" });
-            Competition.Participants.Add(new Driver() {Name = "b" });
+            competition.Participants.Add(new Driver() {Name = "e", TeamColor = TeamColors.Yellow});
+            competition.Participants.Add(new Driver() {Name = "f", TeamColor = TeamColors.Red });
+            competition.Participants.Add(new Driver() {Name = "c", TeamColor = TeamColors.Orange });
+            competition.Participants.Add(new Driver() {Name = "d", TeamColor = TeamColors.Cyan });
+            competition.Participants.Add(new Driver() {Name = "a", TeamColor = TeamColors.Green });
+            competition.Participants.Add(new Driver() {Name = "b", TeamColor = TeamColors.Blue });
         }
 
-        public static void AddTracks()
+        public static void AddTracks(Competition competition)
         {
-            Competition.Tracks.Enqueue(new Track("Circuit Elburg", new SectionTypes[] { SectionTypes.StartGrid, SectionTypes.StartGrid, SectionTypes.StartGrid, SectionTypes.Finish, SectionTypes.RightCorner, SectionTypes.Straight, SectionTypes.LeftCorner, SectionTypes.Straight, SectionTypes.Straight, SectionTypes.RightCorner, SectionTypes.RightCorner, SectionTypes.Straight, SectionTypes.Straight, SectionTypes.LeftCorner, SectionTypes.RightCorner, SectionTypes.Straight, SectionTypes.LeftCorner, SectionTypes.RightCorner, SectionTypes.RightCorner, SectionTypes.LeftCorner, SectionTypes.Straight, SectionTypes.RightCorner, SectionTypes.Straight, SectionTypes.Straight, SectionTypes.Straight, SectionTypes.RightCorner}));
-            Competition.Tracks.Enqueue(new Track("track01", new SectionTypes[] {SectionTypes.StartGrid, SectionTypes.StartGrid, SectionTypes.Finish, SectionTypes.LeftCorner, SectionTypes.Straight, SectionTypes.RightCorner, SectionTypes.RightCorner, SectionTypes.Straight, SectionTypes.Straight, SectionTypes.LeftCorner, SectionTypes.RightCorner, SectionTypes.RightCorner, SectionTypes.Straight, SectionTypes.Straight, SectionTypes.Straight, SectionTypes.Straight, SectionTypes.Straight, SectionTypes.RightCorner, SectionTypes.Straight, SectionTypes.RightCorner}));
-            Competition.Tracks.Enqueue(new Track("track02", new SectionTypes[] {SectionTypes.StartGrid}));
+            competition.Tracks.Enqueue(new Track("Circuit Elburg", new SectionTypes[] { SectionTypes.StartGrid, SectionTypes.StartGrid, SectionTypes.StartGrid, SectionTypes.Finish, SectionTypes.RightCorner, SectionTypes.Straight, SectionTypes.LeftCorner, SectionTypes.Straight, SectionTypes.Straight, SectionTypes.RightCorner, SectionTypes.RightCorner, SectionTypes.Straight, SectionTypes.Straight, SectionTypes.LeftCorner, SectionTypes.RightCorner, SectionTypes.Straight, SectionTypes.LeftCorner, SectionTypes.RightCorner, SectionTypes.RightCorner, SectionTypes.LeftCorner, SectionTypes.Straight, SectionTypes.RightCorner, SectionTypes.Straight, SectionTypes.Straight, SectionTypes.Straight, SectionTypes.RightCorner}));
+            competition.Tracks.Enqueue(new Track("track01", new SectionTypes[] {SectionTypes.StartGrid, SectionTypes.StartGrid, SectionTypes.StartGrid, SectionTypes.Finish, SectionTypes.LeftCorner, SectionTypes.Straight, SectionTypes.RightCorner, SectionTypes.RightCorner, SectionTypes.Straight, SectionTypes.Straight, SectionTypes.LeftCorner, SectionTypes.RightCorner, SectionTypes.RightCorner, SectionTypes.Straight, SectionTypes.Straight, SectionTypes.Straight, SectionTypes.Straight, SectionTypes.Straight, SectionTypes.Straight, SectionTypes.RightCorner, SectionTypes.Straight, SectionTypes.RightCorner}));
+            competition.Tracks.Enqueue(new Track("track02", new SectionTypes[] {SectionTypes.StartGrid}));
         }
 
         public static void NextRace()

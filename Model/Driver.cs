@@ -13,8 +13,8 @@ namespace Model
         public int LapCount { get; set; }
         public int RaceTime { get; set; }
         public bool FinishedCurrentRace { get; set; }
-        public int AmountCrashedPerRace { get; set; }
-        public int AmountCrashedPerCompetition { get; set; }
+        public double SectionEnterTime { get; set; } = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+        public double StartTime { get; set; } = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
 
         public Driver()
         {

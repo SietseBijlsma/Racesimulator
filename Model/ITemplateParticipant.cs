@@ -7,9 +7,9 @@ namespace Model
 {
     public interface ITemplateParticipant<T>
     {
-        string Name { get; set; }
+        public string Name { get; set; }
 
         public void Add(List<T> list);
-        public void GetBest(List<T> list);
+        public string GetBest(List<T> list);
     }
 }

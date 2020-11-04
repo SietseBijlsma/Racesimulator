@@ -13,6 +13,13 @@ namespace Model
             t.Add(_list);
         }
 
+        public string GetBestInfo()
+        {
+            if (_list.Count != 0)
+                return _list[0].GetBest(_list);
+            return "";
+        }
+
         public List<T> GetList()
         {
             return _list;

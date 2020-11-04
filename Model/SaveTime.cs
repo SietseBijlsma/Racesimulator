@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Model
@@ -8,32 +9,29 @@ namespace Model
     {
         public string Name { get; set; }
         public TimeSpan Time { get; set; }
-        public TimeSpan TimePerSection { get; set; }
+        public Track Track { get; set; }
 
         public void Add(List<SaveTime> list)
         {
-            SaveTime match = list.Find(x => x.Name == Name);
+            SaveTime match = list.Find(x => x.Name == Name && x.Track == Track);
             if (match != null)
-                match.Time += Time;
+                match.Time = Time;
             else
-                this.Time = Time;
-
-            if (match != null)
-                match.TimePerSection += TimePerSection;
-            else
-                this.TimePerSection = TimePerSection;
+                list.Add(this);
         }
 
-        public void GetBest(List<SaveTime> list)
+        public string GetBest(List<SaveTime> list)
         {
-
+            string result = list.Find(y => y.Time == list.Min(x => x.Time)).Name;
+            if (list.Count > 0)
+                return result;
+            return "";
         }
 
         public SaveTime()
         {
             Name = this.Name;
             Time = this.Time;
-            TimePerSection = this.TimePerSection;
         }
     }
 }

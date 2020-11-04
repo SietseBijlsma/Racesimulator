@@ -14,7 +14,7 @@ namespace Racebaan
     {
         public static void InitializeTrack(Track track)
         {
-            CalcDirection(track);
+            Race.CalcDirection(track);
             Data.CurrentRace.DriversChanged += OnDriversChanged;
             Data.CurrentRace.RaceEnded += RaceEnded;
             Console.CursorVisible = false;
@@ -64,65 +64,7 @@ namespace Racebaan
             DrawRaceInfo();
         }
 
-        //calculates the direction of all the corners and places the track on the console if one goes below zero
-        public static void CalcDirection(Track track)
-        {
-            //direction 1 is north
-            //direction 2 is east
-            //direction 3 is south
-            //direction 4 is west
-
-            int direction = 2;
-            int x = 1;
-            int y = 1;
-            int lowestX = 0;
-            int lowestY = 0;
-
-            foreach (Section section in track.Sections)
-            {
-                section.Direction = direction;
-                switch (direction)
-                {
-                    case 1:
-                        y--;
-                        break;
-                    case 2:
-                        x++;
-                        break;
-                    case 3:
-                        y++;
-                        break;
-                    case 4:
-                        x--;
-                        break;
-                }
-
-                if (section.SectionType == SectionTypes.LeftCorner)
-                {
-                    if (direction == 1) direction = 4;
-                    else direction--;
-                }
-                else if (section.SectionType == SectionTypes.RightCorner)
-                {
-                    if (direction == 4) direction = 1;
-                    else direction++;
-                }
-
-                section.X = x;
-                section.Y = y;
-                if (x < lowestX) lowestX = x;
-                if (y < lowestY) lowestY = y;
-            }
-            lowestX = lowestX * -1;
-            lowestY = lowestY * -1;
-            foreach (Section section in track.Sections)
-            {
-                section.X += lowestX;
-                section.Y += lowestY;
-            }
-        }
-
-        //draws the track based off the coords given from CalcCoords
+        //draws the track based off the coords
         public static void DrawTrackArray(Section section)
         {
             string[] trackArray = {};
@@ -233,22 +175,12 @@ namespace Racebaan
             Console.Write("------------------");
             foreach (IParticipant participant in Data.CurrentRace.Participants)
             {
-                int quality = participant.Equipment.Quality;
-                int performance = participant.Equipment.Performance;
-                int speed = performance * quality;
-
                 y++;
                 Console.SetCursorPosition(x, y);
                 Console.Write($"| Participant: {participant.Name}");
                 y++;
                 Console.SetCursorPosition(x, y);
-                Console.Write($"|     Speed: {speed}");
-                y++;
-                Console.SetCursorPosition(x, y);
-                Console.Write($"|     CrashesPerRace: {participant.AmountCrashedPerRace}");
-                y++;
-                Console.SetCursorPosition(x, y);
-                Console.Write($"|     CrashesPerCompetition: {participant.AmountCrashedPerCompetition}");
+                Console.Write($"|     Speed: {participant.Equipment.Speed}");
                 y++;
                 Console.SetCursorPosition(x, y);
                 Console.Write($"|     RaceTime: {participant.RaceTime / 2}");
@@ -256,6 +188,19 @@ namespace Racebaan
             y++;
             Console.SetCursorPosition(x, y);
             Console.Write("------------------");
+            y++;
+            Console.SetCursorPosition(x, y);
+            Console.Write($"|      MostPoints: {Data.Competition.Points.GetBestInfo()} ");
+            y++;
+            Console.SetCursorPosition(x, y);
+            Console.Write($"|      LeastCrashes: {Data.Competition.CrashesTotal.GetBestInfo()} ");
+            y++;
+            Console.SetCursorPosition(x, y);
+            Console.Write($"|      FastestTime: {Data.Competition.Time.GetBestInfo()} ");
+            y++;
+            Console.SetCursorPosition(x, y);
+            Console.Write("------------------");
+
         }
     }
 }

@@ -13,8 +13,7 @@ namespace Model
          int LapCount { get; set; }
          int RaceTime { get; set; }
          bool FinishedCurrentRace { get; set; }
-         int AmountCrashedPerRace { get; set; }
-         int AmountCrashedPerCompetition { get; set; }
+        
     }
 
     public enum TeamColors
@@ -22,7 +21,8 @@ namespace Model
         Red,
         Green,
         Yellow,
-        Grey,
-        Blue
+        Cyan,
+        Blue,
+        Orange
     }
 }
