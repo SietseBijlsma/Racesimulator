@@ -162,6 +162,7 @@ namespace Controller
             }    
         }
 
+        //Determines the position of the players
         public List<IParticipant> DeterminePosition()
         {
             return Participants.OrderByDescending(x => x.RaceTime).ToList();
@@ -185,7 +186,7 @@ namespace Controller
         //OnTimedEvent is being called every 0.5 seconds
         private void OnTimedEvent(object sender, EventArgs e)
         {
-            //clears the event handler and starts the event to begin the nextRace when all the participants finished all the laps
+            //clears the event handler and starts the event to begin the nextRace. when all the participants finished all their laps.
             bool finished = Participants.FindAll(x => x.LapCount == 2).Count == Participants.Count;
             if (finished)
             {
@@ -224,8 +225,9 @@ namespace Controller
                 bool canMove = false;
 
                 IsCarBroken(participant);
+                const int laps = 1;
 
-                if (participant.LapCount < 2 && participant.Equipment.IsBroken == false)
+                if (participant.LapCount <= laps && participant.Equipment.IsBroken == false)
                 {
                     if (data.Left == participant)
                     {
